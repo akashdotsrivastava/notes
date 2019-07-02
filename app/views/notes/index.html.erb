@@ -1,23 +1,65 @@
 <p id="notice"><%= notice %></p>
 
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<%= button_to 'Add a New Note', new_note_path, class: 'btn-primary btn', method: 'get' %>
+<br>
 
-  <tbody>
-    <% @notes.each do |note| %>
+<%= will_paginate @notes %>
+
+<div class='table-responsive table-hover'>
+  <table class='table table-hover' style='width: 100% !important'>
+    <thead>
       <tr>
-        <td><%= link_to 'Show', note %></td>
-        <td><%= link_to 'Edit', edit_note_path(note) %></td>
-        <td><%= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Title</th>
+        <th>Body</th>
+        <th>Tags</th>
+        <th>Priority</th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+
+    <tbody>
+      <% @notes.each do |note| %>
+        <tr style='cursor: pointer;' title='Click anywhere to view details' data-toggle='modal' data-target='#noteModal'>
+          <td><%= note.title %></td>
+          <td><%= note.body.truncate(25) %></td>
+          <td>
+            <%= note.tags.map{|tag| link_to tag.text.strip, notes_path(tag_id: tag.id) }.join(', ').html_safe %>
+          </td>
+          <td style="color: <%= Note::PRIORITY_COLOR_SCHEME[note.priority.to_sym] %>"><%= note.priority %></td>
+          <td><%= link_to 'Edit', edit_note_path(note) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
 <br>
 
-<%= button_to 'Add a New Note', new_note_path, class: 'btn-primary btn', method: 'get' %>
+<div class="modal" id="noteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title" id='note-title' ></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body" id='modal-body'>
+        
+      </div>
+      <div class="modal-body" id='modal-tags'>
+        Tags
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+

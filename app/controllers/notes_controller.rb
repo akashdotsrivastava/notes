@@ -5,7 +5,7 @@ class NotesController < ApplicationController
   # GET /notes
   # GET /notes.json
   def index
-    @notes = Note.all
+    @notes = current_user.notes.where(active: true).paginate(page: params[:page], per_page: 5)
   end
 
   # GET /notes/1
@@ -70,6 +70,6 @@ class NotesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def note_params
-      params.fetch(:note, {})
+      params.fetch(:note, {}).permit(:title, :body, :user_id, :tag_list, :priority)
     end
 end
