@@ -1,4 +1,11 @@
 <p id="notice"><%= notice %></p>
-
+<div class="text-center">
+  <h1 class=''><%= @note.title %></h1>
+  <h5><%= @note.tags.map{|tag| link_to tag.text.strip, notes_path(tag_id: tag.id) }.join(', ').html_safe %></h5>
+  <div class='card flex'>
+  	<%= @note.body %>
+  </div>
+</div>
+<br>
 <%= link_to 'Edit', edit_note_path(@note) %> |
 <%= link_to 'Back', notes_path %>

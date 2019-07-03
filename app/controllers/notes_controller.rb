@@ -5,7 +5,25 @@ class NotesController < ApplicationController
   # GET /notes
   # GET /notes.json
   def index
-    @notes = current_user.notes.where(active: true).paginate(page: params[:page], per_page: 5)
+    @notes = current_user.notes
+    @notes = @notes#.where(active: true)
+    if params[:tag_id].present?
+      @notes = @notes.joins(:taggings).where(taggings: { tag_id: params[:tag_id] })
+    end
+    @notes = case params[:status]
+             when 'active', nil
+               @notes.where(active: true)
+             when 'inactive'
+               @notes.where(active: false)
+             else
+               @notes
+             end
+    if params[:order_by].present?
+      @notes = @notes.order("#{params[:order_by]} #{params[:direction]}")
+    else
+      @notes = @notes.order(updated_at: :desc)
+    end
+    @notes = @notes.paginate(page: params[:page], per_page: 10)
   end
 
   # GET /notes/1
@@ -29,7 +47,7 @@ class NotesController < ApplicationController
 
     respond_to do |format|
       if @note.save
-        format.html { redirect_to @note, notice: 'Note was successfully created.' }
+        format.html { redirect_to notes_path, notice: 'Note was successfully created.' }
         format.json { render :show, status: :created, location: @note }
       else
         format.html { render :new }
@@ -43,7 +61,7 @@ class NotesController < ApplicationController
   def update
     respond_to do |format|
       if @note.update(note_params)
-        format.html { redirect_to @note, notice: 'Note was successfully updated.' }
+        format.html { redirect_to notes_path, notice: 'Note was successfully updated.' }
         format.json { render :show, status: :ok, location: @note }
       else
         format.html { render :edit }
@@ -70,6 +88,6 @@ class NotesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def note_params
-      params.fetch(:note, {}).permit(:title, :body, :user_id, :tag_list, :priority)
+      params.fetch(:note, {}).permit(:title, :body, :user_id, :tag_list, :priority, :active)
     end
 end

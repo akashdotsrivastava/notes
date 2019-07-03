@@ -11,14 +11,17 @@
 
   <body class='container'>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Notes</a>
+      <a class="navbar-brand" href="<%= notes_path %>">Notes</a>
       
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           
         </ul>
-        <%= link_to "Log Out", destroy_user_session_path if user_signed_in? %>
+        <% if user_signed_in? %>
+          <%= current_user.full_name %>&nbsp;&nbsp;&nbsp;
+          <%= link_to "Log Out", destroy_user_session_path %>
+        <% end %>
       </div>
     </nav>
     <%= yield %>

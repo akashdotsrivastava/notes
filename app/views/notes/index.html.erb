@@ -1,6 +1,16 @@
-<p id="notice"><%= notice %></p>
+<p id="notice" class='notice'><%= notice %></p>
 
-<%= button_to 'Add a New Note', new_note_path, class: 'btn-primary btn', method: 'get' %>
+<div class='row'>
+  <div class='col-md-2 col-sm-2 col-lg-2 col-xs-2'>
+    <%= button_to 'Add a New Note', new_note_path, class: 'btn-primary btn', method: 'get' %>
+  </div>
+  <div class='col-md-8 col-sm-8 col-lg-8 col-xs-8'>
+    
+  </div>
+  <div class='col-md-2 col-sm-2 col-lg-2 col-xs-2'>
+    <%= select_tag :status, options_for_select(['active', 'inactive', 'all'], params[:status] || 'active'), class: 'form-control', data: { notes_path: notes_path } %>
+  </div>
+</div>
 <br>
 
 <%= will_paginate @notes %>
@@ -12,54 +22,35 @@
         <th>Title</th>
         <th>Body</th>
         <th>Tags</th>
-        <th>Priority</th>
-        <th></th>
+        <th><%= link_to 'Priority', notes_path(order_by: 'priority', direction: (params[:order_by] == 'priority' && params[:direction] == 'asc') ? 'desc' : 'asc') %></th>
+        <th>Status</th>
+        <th colspan='2'></th>
       </tr>
     </thead>
 
     <tbody>
       <% @notes.each do |note| %>
-        <tr style='cursor: pointer;' title='Click anywhere to view details' data-toggle='modal' data-target='#noteModal'>
-          <td><%= note.title %></td>
+        <tr style="cursor: pointer; color: <%= note.active? ? '' : 'grey'; %>" data-toggle='modal' data-target='#noteModal'>
+          <td><%= link_to note.title, note_path(note) %></td>
           <td><%= note.body.truncate(25) %></td>
           <td>
             <%= note.tags.map{|tag| link_to tag.text.strip, notes_path(tag_id: tag.id) }.join(', ').html_safe %>
           </td>
           <td style="color: <%= Note::PRIORITY_COLOR_SCHEME[note.priority.to_sym] %>"><%= note.priority %></td>
+          <td><%= note.active? ? 'Active' : 'Inactive' %></td>
           <td><%= link_to 'Edit', edit_note_path(note) %></td>
+          <td>
+            <% if note.active? %>
+              <%= button_to 'Deactivate', note_path(note, note: {active: false}), method: :put, class: 'btn btn-danger btn-sm' %>
+            <% else %>
+              <%= button_to 'Activate', note_path(note, note: {active: true}), method: :put, class: 'btn btn-success btn-sm' %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
 
+<%= javascript_pack_tag :notes %>
 <br>
-
-<div class="modal" id="noteModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title" id='note-title' ></h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body" id='modal-body'>
-        
-      </div>
-      <div class="modal-body" id='modal-tags'>
-        Tags
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
