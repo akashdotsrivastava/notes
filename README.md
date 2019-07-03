@@ -1,24 +1,14 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+To run the app, clone this repo and then:
 
-Things you may want to cover:
+Run in the app root directory
 
-* Ruby version
+```
+gem install bundler
+bundle install
+bin/rake db:setup
+foreman start
+```
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Hit `localhost:3010` in a browser of your choice and follow
